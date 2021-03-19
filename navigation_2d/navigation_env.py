@@ -428,21 +428,24 @@ class NavigationEnvAccLidarObs(NavigationEnvAcc):
             'distance': gym.spaces.Box(np.array([0]), np.array([np.sqrt(W ** 2 + H ** 2)]), dtype=np.float32),
             'lidar': gym.spaces.Box(low=0, high=1, shape=(16,)),
             'energy': gym.spaces.Box(low=0, high=1, shape=(1,)),
-            'velocity': gym.spaces.Box(np.array([-3, -3]), np.array([3, 3]), dtype=np.float32)
+            'velocity': gym.spaces.Box(np.array([-3, -3]), np.array([3, 3]), dtype=np.float32),
+            'goal_position': gym.spaces.Box(low=0, high=1, shape=(2, )),
         }
-        self.observation_meta_data_keys = ['position', 'lidar', 'energy', 'distance', 'velocity']
+        self.observation_meta_data_keys = ['position', 'lidar', 'energy', 'distance', 'velocity', 'goal_position']
 
     def dict_observation(self):
         position = normalize_position(self.drone.position, W, H)
         distance = np.linalg.norm(normalize_position(self.drone.position, W, H) - (normalize_position(self.goal.position, W, H)))
         lidar = [l.fraction for l in self.lidar]
         velocity = self.drone.linearVelocity
+        goal_position = self.task_args['Goal']
         dict_obs = {
             'position': position,
             'distance': distance,
             'lidar': lidar,
             'energy': self.energy,
-            'velocity': velocity
+            'velocity': velocity,
+            'goal_position': goal_position,
         }
         return dict_obs
 
